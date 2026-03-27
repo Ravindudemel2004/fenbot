@@ -4,7 +4,7 @@ import urllib.parse
 import chess
 import asyncio
 
-
+BOT_TOKEN = '8614554986:AAF0nbOIBu4OE6fEwA8jVvfgB4h1LA-kjVI'
 
 def fen_to_url(fen: str):
     encoded = urllib.parse.quote(fen)
