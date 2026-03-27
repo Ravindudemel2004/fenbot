@@ -1,1 +1,23 @@
+name: Run Telegram Bot
 
+on:
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download code
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install libraries
+        run: pip install -r requirements.txt
+
+      - name: Start bot (20 minutes)
+        run: timeout 1200 python bot.py
