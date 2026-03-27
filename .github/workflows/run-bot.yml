@@ -1,23 +1,37 @@
-name: Run Telegram Bot
+# .github/workflows/deploy-bot.yml
+name: Deploy Telegram Bot
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
-  run-bot:
+  deploy:
     runs-on: ubuntu-latest
-
+    environment: production
+    
     steps:
-      - name: Download code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
 
-      - name: Install libraries
-        run: pip install -r requirements.txt
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
 
-      - name: Start bot (20 minutes)
-        run: timeout 1200 python bot.py
+    # Option A: Deploy to Render (free tier, persists for ~15 min idle)
+    - name: Deploy to Render
+      if: ${{ secrets.RENDER_DEPLOY_HOOK }}
+      run: |
+        curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+      env:
+        RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+    # Option B: Use GitHub Actions as ephemeral webhook host (advanced)
+    # Note: GitHub Actions runners are temporary (~6 hours max)
+    # For persistent hosting, use Render/Railway/Fly.io instead
